@@ -1,0 +1,10 @@
+# One Know Your Meme slug per line (the part after /memes/ in the URL).
+# Lines starting with # are ignored. Seed list -- expand toward 50-100 later.
+rickroll
+distracted-boyfriend
+doge
+pepe-the-frog
+trollface
+bad-luck-brian
+success-kid
+overly-attached-girlfriend
