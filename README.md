@@ -11,7 +11,7 @@ A conversational RAG (retrieval-augmented generation) agent for internet meme hi
 
 ## Status
 
-Pipeline validated end-to-end (steps 1-5) against a seed set of 8 memes: rickroll, distracted-boyfriend, doge, pepe-the-frog, trollface, bad-luck-brian, success-kid-i-hate-sandcastles, overly-attached-girlfriend. Deliberately kept to 8 while proving out the pipeline before scaling the corpus toward 50-100.
+Pipeline validated end-to-end (steps 1-6) against a seed set of 8 memes: rickroll, distracted-boyfriend, doge, pepe-the-frog, trollface, bad-luck-brian, success-kid-i-hate-sandcastles, overly-attached-girlfriend. Deliberately kept to 8 while proving out the pipeline before scaling the corpus toward 50-100.
 
 ### Setup
 
@@ -76,9 +76,18 @@ python3 scripts/generate.py "Who is the dog in the Doge meme?"
 
 Verified manually: in-corpus questions get cited, grounded answers; out-of-corpus questions (e.g. "Tell me about the Grumpy Cat meme") get the decline message instead of the model falling back on its own training knowledge.
 
+### Step 6: conversational wrapper (done)
+
+`scripts/chat.py` is a REPL that adds multi-turn chat on top of step 5. Since vector search has no notion of prior turns, each follow-up question is first rewritten into a standalone query using the conversation history, then retrieval and generation proceed exactly as in step 5 (same score gate and decline path) — chat history informs query condensation and conversational tone, never the grounding itself.
+
+```bash
+python3 scripts/chat.py
+```
+
+Verified manually: a follow-up like "Why did it become popular?" after asking about Doge correctly condenses to "Why did the Doge meme become popular?" and retrieves the right chunks; an out-of-corpus follow-up (e.g. "Tell me about the Grumpy Cat meme") still declines rather than answering from the model's own knowledge.
+
 ### Remaining steps
 
-6. Conversational wrapper — multi-turn chat history via LangChain
 7. Testing — a proper pass of out-of-corpus questions to confirm the decline path holds up beyond ad hoc spot checks
 
 ### Deferred to later phases
