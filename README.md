@@ -11,7 +11,7 @@ A conversational RAG (retrieval-augmented generation) agent for internet meme hi
 
 ## Status
 
-Full pipeline (steps 1-7) validated end-to-end against a seed set of 8 memes: rickroll, distracted-boyfriend, doge, pepe-the-frog, trollface, bad-luck-brian, success-kid-i-hate-sandcastles, overly-attached-girlfriend. Deliberately kept to 8 while proving out the pipeline; next up is scaling the corpus toward 50-100.
+Full pipeline (steps 1-7) validated end-to-end. Corpus scaled from the original 8-meme seed set to 50 memes (204 chunks) as of 2026-09-02, mixing globally-known memes (rickroll, doge, pepe-the-frog, gigachad, wojak, etc.) with Indian pop-culture entries (naatu-naatu, hera-pheri-2000-film, sad-shahid-kapoor, pawri-ye-hamari-pawri-ho-rahi-hai, etc.) — curated to exclude political and violent/crime-related entries. See `data/meme_list.txt` for the full list. Next up is scaling further toward ~100 then ~500.
 
 ### Setup
 
