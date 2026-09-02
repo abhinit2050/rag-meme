@@ -11,7 +11,7 @@ A conversational RAG (retrieval-augmented generation) agent for internet meme hi
 
 ## Status
 
-Pipeline validated end-to-end (steps 1-6) against a seed set of 8 memes: rickroll, distracted-boyfriend, doge, pepe-the-frog, trollface, bad-luck-brian, success-kid-i-hate-sandcastles, overly-attached-girlfriend. Deliberately kept to 8 while proving out the pipeline before scaling the corpus toward 50-100.
+Full pipeline (steps 1-7) validated end-to-end against a seed set of 8 memes: rickroll, distracted-boyfriend, doge, pepe-the-frog, trollface, bad-luck-brian, success-kid-i-hate-sandcastles, overly-attached-girlfriend. Deliberately kept to 8 while proving out the pipeline; next up is scaling the corpus toward 50-100.
 
 ### Setup
 
@@ -86,9 +86,25 @@ python3 scripts/chat.py
 
 Verified manually: a follow-up like "Why did it become popular?" after asking about Doge correctly condenses to "Why did the Doge meme become popular?" and retrieves the right chunks; an out-of-corpus follow-up (e.g. "Tell me about the Grumpy Cat meme") still declines rather than answering from the model's own knowledge.
 
-### Remaining steps
+### Step 7: testing (done)
 
-7. Testing — a proper pass of out-of-corpus questions to confirm the decline path holds up beyond ad hoc spot checks
+`scripts/test_decline.py` runs `generate.answer()` against three categories: out-of-corpus memes (real memes not in `data/meme_list.txt`), unrelated general-knowledge questions, and an in-corpus control group. The first two must decline; the control group must not, confirming the pipeline discriminates rather than declining everything. Exits non-zero on any failure, so it doubles as a CI-style check.
+
+```bash
+python3 scripts/test_decline.py
+```
+
+14/14 passing as of this writing.
+
+### Evals
+
+`scripts/eval_retrieval.py` is a retrieval-quality eval, separate from the pass/fail decline tests above: it runs a golden set of 16 meme-specific questions (two phrasings per seed meme) through `retrieve()` and checks whether the correct meme's chunk comes back, reporting Recall@k, Precision@k, and MRR.
+
+```bash
+python3 scripts/eval_retrieval.py
+```
+
+Current results (k=5): Recall@5 100% (16/16), MRR 1.000 (correct meme is always the top hit), Precision@5 ~79% — expected, since each meme has only 5 chunks (one per section) so k=5 pulls in a chunk or two from neighboring memes; those get filtered out downstream by `generate.py`'s relevance-score gate, per `test_decline.py`. Worth re-running as the corpus scales past 8 memes, since precision should tighten (less "over-fetching" needed to fill k=5) but recall could degrade if the vector space gets more crowded.
 
 ### Deferred to later phases
 
