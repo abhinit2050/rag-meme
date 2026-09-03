@@ -11,7 +11,9 @@ A conversational RAG (retrieval-augmented generation) agent for internet meme hi
 
 ## Status
 
-Full pipeline (steps 1-7) validated end-to-end. Corpus scaled from the original 8-meme seed set to 50 memes (204 chunks) as of 2026-09-02, mixing globally-known memes (rickroll, doge, pepe-the-frog, gigachad, wojak, etc.) with Indian pop-culture entries (naatu-naatu, hera-pheri-2000-film, sad-shahid-kapoor, pawri-ye-hamari-pawri-ho-rahi-hai, etc.) — curated to exclude political and violent/crime-related entries. See `data/meme_list.txt` for the full list. Next up is scaling further toward ~100 then ~500.
+Full pipeline (steps 1-7) validated end-to-end. Corpus scaled from the original 8-meme seed set to 51 memes (208 chunks) as of 2026-09-03, mixing globally-known memes (rickroll, doge, pepe-the-frog, gigachad, wojak, etc.) with Indian pop-culture entries (naatu-naatu, hera-pheri-2000-film, sad-shahid-kapoor, pawri-ye-hamari-pawri-ho-rahi-hai, etc.) — curated to exclude political and violent/crime-related entries. See `data/meme_list.txt` for the full list. Next up is scaling further toward ~100 then ~500.
+
+A Streamlit chat frontend (`app.py`) wraps `scripts/chat.py`'s conversational logic in a browser UI, with a purple-accented dark/light theme toggle. Meme add/search/browse UI is planned as a later addition on top of the same app.
 
 ### Setup
 
@@ -105,6 +107,18 @@ python3 scripts/eval_retrieval.py
 ```
 
 Current results (k=5): Recall@5 100% (16/16), MRR 1.000 (correct meme is always the top hit), Precision@5 ~79% — expected, since each meme has only 5 chunks (one per section) so k=5 pulls in a chunk or two from neighboring memes; those get filtered out downstream by `generate.py`'s relevance-score gate, per `test_decline.py`. Worth re-running as the corpus scales past 8 memes, since precision should tighten (less "over-fetching" needed to fill k=5) but recall could degrade if the vector space gets more crowded.
+
+## Frontend
+
+`app.py` is a Streamlit chat UI over the step 6 conversational logic (`scripts/chat.py`'s `answer()`) — no RAG logic lives in the frontend itself.
+
+```bash
+streamlit run app.py
+```
+
+Features: multi-turn chat (same query-condensation + grounding-gate behavior as the CLI), a "searched for" hint when a follow-up gets rewritten, a "New chat" reset button, and a purple-accented Dark/Light theme toggle in the sidebar (`.streamlit/config.toml` sets the default dark theme; the toggle swaps in a light variant via injected CSS). Meme add/search/browse UI is planned as a later addition to this same app.
+
+While developing: Streamlit auto-reruns on file save (`pip install watchdog` makes this faster); use the "Rerun"/"Always rerun" prompt in the browser if a save doesn't pick up automatically.
 
 ### Deferred to later phases
 
